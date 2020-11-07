@@ -20,13 +20,13 @@ jobs:
           java-version: 12
 
       - name: Build APK
-        run: bash ./gradlew assembleReleaseUnsigned --stacktrace
+        run: bash ./gradlew assembleRelease --stacktrace
 
       - name: Sign APK
         uses: jobobby04/sign-android-release@v1.0.2
         id: sign
         with:
-          releaseDirectory: app/build/outputs/apk/releaseUnsigned
+          releaseDirectory: app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
