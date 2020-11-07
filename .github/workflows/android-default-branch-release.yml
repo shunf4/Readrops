@@ -17,7 +17,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 10
+          java-version: 12
 
       - name: Build APK
         run: bash ./gradlew assembleReleaseUnsigned --stacktrace
