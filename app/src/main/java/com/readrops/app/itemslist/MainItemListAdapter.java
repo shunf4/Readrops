@@ -218,7 +218,8 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     @NonNull
     @Override
     public List<String> getPreloadItems(int position) {
-        if (getItem(position).getItem().hasImage()) {
+        ItemWithFeed itemWithFeed = getItem(position);
+        if (itemWithFeed != null && itemWithFeed.getItem().hasImage()) {
             String url = getItem(position).getItem().getImageLink();
             return Collections.singletonList(url);
         } else {
