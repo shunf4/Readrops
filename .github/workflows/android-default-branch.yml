@@ -3,7 +3,9 @@ name: Android Default Branch CI
 on:
   push:
     branches:
-      - master
+      - shunf4_mod
+      - 'fix/*'
+      - 'feat/*'
 
 jobs:
   apk:
