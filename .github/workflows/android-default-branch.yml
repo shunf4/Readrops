@@ -22,13 +22,13 @@ jobs:
           java-version: 10
 
       - name: Build APK
-        run: bash ./gradlew assembleReleaseUnsigned --stacktrace
+        run: bash ./gradlew assembleRelease --stacktrace
 
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
         id: sign
         with:
-          releaseDirectory: app/build/outputs/apk/releaseUnsigned
+          releaseDirectory: app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -37,5 +37,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: wallabag-release
+          name: readrops-release
           path: ${{ steps.sign.outputs.signedReleaseFile }}
