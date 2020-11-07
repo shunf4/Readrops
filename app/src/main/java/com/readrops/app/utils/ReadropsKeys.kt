@@ -11,6 +11,11 @@ object ReadropsKeys {
 
     const val ITEM_ID = "ITEM_ID_KEY"
     const val IMAGE_URL = "IMAGE_URL_KEY"
+    const val INDEX_IN_LIST = "INDEX_IN_LIST_KEY"
+    const val SHOW_READ_ITEMS = "SHOW_READ_ITEMS_KEY"
+    const val FILTER_TYPE = "FILTER_TYPE_KEY"
+    const val SORT_TYPE = "SORT_TYPE_KEY"
+    const val FILTER_FEED_ID = "FILTER_FEED_ID_KEY"
 
     const val SYNCING = "SYNCING_KEY"
 

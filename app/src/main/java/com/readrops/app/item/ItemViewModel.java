@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public class ItemViewModel extends ViewModel {
 
@@ -27,7 +28,7 @@ public class ItemViewModel extends ViewModel {
         this.database = database;
     }
 
-    public LiveData<ItemWithFeed> getItemById(int id) {
+    public Single<ItemWithFeed> getItemById(int id) {
         return database.itemDao().getItemById(id);
     }
 

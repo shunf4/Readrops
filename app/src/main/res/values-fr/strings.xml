@@ -134,5 +134,6 @@
     <string name="synchronize">Synchroniser</string>
     <string name="navigator_view">Vue navigateur</string>
     <string name="favorites">Favoris</string>
-
+    <string name="prev_item">" Précédent"</string>
+    <string name="next_item">Suivant</string>
 </resources>

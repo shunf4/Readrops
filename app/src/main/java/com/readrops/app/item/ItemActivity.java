@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
+import androidx.paging.PagedList;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -33,11 +34,14 @@ import com.bumptech.glide.request.transition.Transition;
 import com.readrops.api.utils.DateUtils;
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityItemBinding;
+import com.readrops.app.itemslist.MainViewModel;
 import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.Item;
+import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
 
 import org.koin.androidx.viewmodel.compat.ViewModelCompat;
@@ -47,11 +51,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
+import static com.readrops.app.utils.ReadropsKeys.FILTER_FEED_ID;
+import static com.readrops.app.utils.ReadropsKeys.FILTER_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
+import static com.readrops.app.utils.ReadropsKeys.INDEX_IN_LIST;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
+import static com.readrops.app.utils.ReadropsKeys.SHOW_READ_ITEMS;
+import static com.readrops.app.utils.ReadropsKeys.SORT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.WEB_URL;
 
 public class ItemActivity extends AppCompatActivity {
@@ -69,7 +80,11 @@ public class ItemActivity extends AppCompatActivity {
     private String urlToDownload;
     private String imageTitle;
 
-    private boolean uiBinded;
+    private int itemId;
+    private String imageUrl;
+    private int indexInList = -1;
+    private PagedList<ItemWithFeed> allItems;
+    private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +93,6 @@ public class ItemActivity extends AppCompatActivity {
         binding = ActivityItemBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Intent intent = getIntent();
-        int itemId = intent.getIntExtra(ITEM_ID, 0);
-        String imageUrl = intent.getStringExtra(IMAGE_URL);
-
         setSupportActionBar(binding.collapsingLayoutToolbar);
 
         if (getSupportActionBar() != null) {
@@ -89,20 +100,6 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         registerForContextMenu(binding.itemWebview);
-
-        if (imageUrl == null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-            binding.collapsingLayout.setTitleEnabled(false);
-            binding.collapsingLayoutScrim.setVisibility(View.GONE);
-        } else {
-            binding.appBarLayout.setExpanded(true);
-            binding.collapsingLayout.setTitleEnabled(true);
-
-            KoinJavaComponent.get(GlideRequests.class)
-                    .load(imageUrl)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(binding.collapsingLayoutImage);
-        }
 
         final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
                 new int[]{android.R.attr.actionBarSize});
@@ -117,12 +114,6 @@ public class ItemActivity extends AppCompatActivity {
         }));
 
         viewModel = ViewModelCompat.getViewModel(this, ItemViewModel.class);
-        viewModel.getItemById(itemId).observe(this, itemWithFeed1 -> {
-            if (!uiBinded) {
-                bindUI(itemWithFeed1);
-                uiBinded = true;
-            }
-        });
 
         binding.activityItemFab.setOnClickListener(v -> openInNavigator());
 
@@ -145,6 +136,77 @@ public class ItemActivity extends AppCompatActivity {
                     .subscribe();
         });
 
+        commonLoadReloadUI(getIntent());
+    }
+
+    private void commonLoadReloadUI(Intent intent) {
+        itemId = intent.getIntExtra(ITEM_ID, 0);
+        imageUrl = intent.getStringExtra(IMAGE_URL);
+        indexInList = intent.getIntExtra(INDEX_IN_LIST, -1);
+        Log.d(TAG, "index in list: " + indexInList);
+
+        binding.switchItemButtons.setVisibility(View.GONE);
+
+        if (intent.hasExtra(INDEX_IN_LIST)) {
+            if (allItems == null) {
+                mainViewModel = ViewModelCompat.getViewModel(this, MainViewModel.class);
+                mainViewModel.enablePlaceholders = true;
+
+                mainViewModel.setShowReadItems(intent.getBooleanExtra(SHOW_READ_ITEMS, false));
+                mainViewModel.setFilterType((FilterType) intent.getSerializableExtra(FILTER_TYPE));
+                mainViewModel.setSortType((ListSortType) intent.getSerializableExtra(SORT_TYPE));
+                mainViewModel.setFilterFeedId(intent.getIntExtra(FILTER_FEED_ID, -1));
+
+                mainViewModel.getAllAccounts().observe(this, accounts -> {
+                    mainViewModel.setAccountsPure(accounts);
+                    mainViewModel.setCurrentAccountPure(intent.getIntExtra(ACCOUNT_ID, -1));
+                    mainViewModel.invalidate();
+                });
+
+                mainViewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
+                    allItems = itemWithFeeds;
+                    allItems.loadAround(indexInList);
+                    addButtonListenerOrHide();
+                });
+            } else {
+                allItems.loadAround(indexInList);
+                addButtonListenerOrHide();
+            }
+        }
+
+        binding.mainScroll.scrollTo(0, 0);
+        binding.appBarLayout.setExpanded(true);
+
+        if (imageUrl == null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            binding.collapsingLayout.setTitleEnabled(false);
+            binding.collapsingLayoutScrim.setVisibility(View.GONE);
+        } else {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            binding.collapsingLayoutScrim.setVisibility(View.VISIBLE);
+            binding.collapsingLayout.setTitleEnabled(true);
+
+            KoinJavaComponent.get(GlideRequests.class)
+                    .load(imageUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.collapsingLayoutImage);
+        }
+
+        viewModel.getItemById(itemId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<ItemWithFeed>() {
+                    @Override
+                    public void onSuccess(ItemWithFeed itemWithFeed) {
+                        bindUI(itemWithFeed);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.getMessage());
+                        Utils.showSnackbar(binding.itemRoot, e.getMessage());
+                    }
+                });
     }
 
     private void bindUI(ItemWithFeed itemWithFeed) {
@@ -153,6 +215,8 @@ public class ItemActivity extends AppCompatActivity {
 
         if (item.isStarred()) {
             binding.itemStarFab.setImageResource(R.drawable.ic_star);
+        } else {
+            binding.itemStarFab.setImageResource(R.drawable.ic_empty_star);
         }
 
         binding.activityItemDate.setText(DateUtils.formattedDateTimeByLocal(item.getPubDate()));
@@ -164,21 +228,29 @@ public class ItemActivity extends AppCompatActivity {
 
         if (itemWithFeed.getFolder() != null) {
             binding.collapsingLayoutToolbar.setSubtitle(itemWithFeed.getFolder().getName());
+        } else {
+            binding.collapsingLayoutToolbar.setSubtitle("");
         }
 
         binding.activityItemTitle.setText(item.getTitle());
 
         if (itemWithFeed.getBgColor() != 0) {
             binding.activityItemTitle.setTextColor(itemWithFeed.getBgColor());
+            binding.prevItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
+            binding.nextItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
             Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), itemWithFeed.getBgColor());
         } else if (itemWithFeed.getColor() != 0) {
             binding.activityItemTitle.setTextColor(itemWithFeed.getColor());
+            binding.prevItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
+            binding.nextItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
             Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), itemWithFeed.getColor());
         }
 
         if (item.getAuthor() != null && !item.getAuthor().isEmpty()) {
             binding.activityItemAuthor.setText(getString(R.string.by_author, item.getAuthor()));
             binding.activityItemAuthor.setVisibility(View.VISIBLE);
+        } else {
+            binding.activityItemAuthor.setVisibility(View.GONE);
         }
 
         if (item.getReadTime() > 0) {
@@ -191,6 +263,8 @@ public class ItemActivity extends AppCompatActivity {
                 binding.activityItemReadtime.setText(getResources().getString(R.string.read_time_one_minute));
 
             binding.activityItemReadtimeLayout.setVisibility(View.VISIBLE);
+        } else {
+            binding.activityItemReadtimeLayout.setVisibility(View.GONE);
         }
 
         if (itemWithFeed.getBgColor() != 0) {
@@ -212,6 +286,43 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         binding.itemWebview.setItem(itemWithFeed);
+    }
+
+    private void switchItem(int itemIndex) {
+        Intent itemIntent = new Intent(this, ItemActivity.class);
+        ItemWithFeed prevItemWithFeed = allItems.get(itemIndex);
+        itemIntent.putExtras(getIntent());
+        itemIntent.putExtra(ITEM_ID, prevItemWithFeed.getItem().getId());
+        itemIntent.putExtra(IMAGE_URL, prevItemWithFeed.getItem().getImageLink());
+        itemIntent.putExtra(INDEX_IN_LIST, itemIndex);
+
+        commonLoadReloadUI(itemIntent);
+        if (mainViewModel != null) {
+            mainViewModel.setItemReadState(itemIntent.getIntExtra(ITEM_ID, 0), true, true)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Utils.showSnackbar(binding.itemRoot, throwable.getMessage()))
+                    .subscribe();
+        }
+    }
+
+    private void addButtonListenerOrHide() {
+        if (allItems != null) {
+            binding.prevItemButton.setOnClickListener(view -> {
+                switchItem(indexInList <= 0 ? 0 : indexInList - 1);
+            });
+
+            binding.nextItemButton.setOnClickListener(view -> {
+                switchItem(
+                        (indexInList >= allItems.size() - 1)
+                                ? (allItems.size() - 1)
+                                : indexInList + (mainViewModel.showReadItems() ? 1 : 0)
+                );
+            });
+            binding.switchItemButtons.setVisibility(View.VISIBLE);
+        } else {
+            binding.switchItemButtons.setVisibility(View.GONE);
+        }
     }
 
     @Override
