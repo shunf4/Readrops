@@ -68,10 +68,15 @@ import io.reactivex.schedulers.Schedulers;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+import static com.readrops.app.utils.ReadropsKeys.FILTER_FEED_ID;
+import static com.readrops.app.utils.ReadropsKeys.FILTER_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
+import static com.readrops.app.utils.ReadropsKeys.INDEX_IN_LIST;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
 import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
+import static com.readrops.app.utils.ReadropsKeys.SHOW_READ_ITEMS;
+import static com.readrops.app.utils.ReadropsKeys.SORT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.SYNCING;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
@@ -312,6 +317,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     intent.putExtra(ITEM_ID, itemWithFeed.getItem().getId());
                     intent.putExtra(IMAGE_URL, itemWithFeed.getItem().getImageLink());
+                    intent.putExtra(INDEX_IN_LIST, position);
+                    intent.putExtra(SHOW_READ_ITEMS, viewModel.showReadItems());
+                    intent.putExtra(FILTER_TYPE, viewModel.getFilterType());
+                    intent.putExtra(SORT_TYPE, viewModel.getSortType());
+                    intent.putExtra(FILTER_FEED_ID, viewModel.getFilterFeedId());
+                    intent.putExtra(ACCOUNT_ID, viewModel.getCurrentAccount().getId());
                     startActivityForResult(intent, ITEM_REQUEST);
 
                     viewModel.setItemReadState(itemWithFeed, true)

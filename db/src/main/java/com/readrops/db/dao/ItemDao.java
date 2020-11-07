@@ -18,6 +18,7 @@ import com.readrops.db.pojo.StarItem;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 @Dao
 public interface ItemDao extends BaseDao<Item> {
@@ -63,7 +64,7 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Select Item.id, title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
             "background_color, read_time, starred, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
             "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
-    LiveData<ItemWithFeed> getItemById(int id);
+    Single<ItemWithFeed> getItemById(int id);
 
     @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 1 And account_id = :accountId")
     List<String> getReadChanges(int accountId);

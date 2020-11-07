@@ -140,4 +140,6 @@
     <string name="synchronize">Synchronize</string>
     <string name="navigator_view">Navigator view</string>
     <string name="favorites">Favorites</string>
+    <string name="next_item">Next item</string>
+    <string name="prev_item">Previous item</string>
 </resources>

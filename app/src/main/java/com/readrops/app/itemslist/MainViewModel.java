@@ -46,6 +46,8 @@ public class MainViewModel extends ViewModel {
     private Account currentAccount;
     private List<Account> accounts;
 
+    public boolean enablePlaceholders = true;
+
     public MainViewModel(@NonNull Database database) {
         this.database = database;
         itemsWithFeed = new MediatorLiveData<>();
@@ -72,7 +74,7 @@ public class MainViewModel extends ViewModel {
                 new PagedList.Config.Builder()
                         .setPageSize(100)
                         .setPrefetchDistance(150)
-                        .setEnablePlaceholders(false)
+                        .setEnablePlaceholders(enablePlaceholders)
                         .build())
                 .build();
 
@@ -109,6 +111,10 @@ public class MainViewModel extends ViewModel {
 
     public void setFilterFeedId(int filterFeedId) {
         queryFilters.setFilterFeedId(filterFeedId);
+    }
+
+    public int getFilterFeedId() {
+        return queryFilters.getFilterFeedId();
     }
 
     public MediatorLiveData<PagedList<ItemWithFeed>> getItemsWithFeed() {
@@ -160,6 +166,17 @@ public class MainViewModel extends ViewModel {
         return currentAccount;
     }
 
+    public void setCurrentAccountPure(Account account) {
+        // Only used in ItemActivity.
+        this.currentAccount = account;
+        setRepository();
+        queryFilters.setAccountId(account.getId());
+    }
+
+    public void setCurrentAccountPure(int id) {
+        setCurrentAccountPure(getAccount(id));
+    }
+
     public void setCurrentAccount(Account currentAccount) {
         this.currentAccount = currentAccount;
         setRepository();
@@ -204,6 +221,11 @@ public class MainViewModel extends ViewModel {
             setCurrentAccount(accounts.get(0));
             accounts.get(0).setCurrentAccount(true);
         }
+    }
+
+    public void setAccountsPure(List<Account> accounts) {
+        // Only used in ItemActivity.
+        this.accounts = accounts;
     }
 
     public boolean isAccountLocal() {
