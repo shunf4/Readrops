@@ -21,7 +21,7 @@ import okhttp3.RequestBody;
 
 public class FreshRSSDataSource {
 
-    private static final int MAX_ITEMS = 5000;
+    private static final int MAX_ITEMS = 2000;
 
     public static final String GOOGLE_READ = "user/-/state/com.google/read";
     public static final String GOOGLE_STARRED = "user/-/state/com.google/starred";
@@ -99,7 +99,8 @@ public class FreshRSSDataSource {
                             syncResult.setFeeds(freshRSSFeeds);
 
                             if (syncType == SyncType.INITIAL_SYNC) {
-                                return getItems(GOOGLE_READ, MAX_ITEMS, null);
+                                // return getItems(GOOGLE_READ, MAX_ITEMS, null); // We sync read items here
+                                return getItems(null, MAX_ITEMS, null);
                             } else {
                                 return getItems(null, MAX_ITEMS, syncData.getLastModified());
                             }

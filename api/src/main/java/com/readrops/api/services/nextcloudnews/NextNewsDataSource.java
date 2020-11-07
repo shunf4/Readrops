@@ -29,7 +29,7 @@ public class NextNewsDataSource {
 
     private static final String TAG = NextNewsDataSource.class.getSimpleName();
 
-    protected static final int MAX_ITEMS = 5000;
+    protected static final int MAX_ITEMS = 2000;
 
     private NextNewsService api;
 

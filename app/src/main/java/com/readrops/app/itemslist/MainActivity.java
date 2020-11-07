@@ -379,14 +379,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         Drawable readLater = ContextCompat.getDrawable(this, R.drawable.ic_read_later).mutate();
         DrawableCompat.setTint(readLater, ContextCompat.getColor(this, android.R.color.white));
 
-        new ItemTouchHelper(new ReadropsItemTouchCallback(this,
-                new ReadropsItemTouchCallback.Config.Builder()
-                        .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
-                        .swipeCallback(this)
-                        .leftDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read_later, readLater)
-                        .rightDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read, null)
-                        .build()))
-                .attachToRecyclerView(binding.itemsRecyclerView);
+        // We disable swipe here
+//        new ItemTouchHelper(new ReadropsItemTouchCallback(this,
+//                new ReadropsItemTouchCallback.Config.Builder()
+//                        .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+//                        .swipeCallback(this)
+//                        .leftDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read_later, readLater)
+//                        .rightDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read, null)
+//                        .build()))
+//                .attachToRecyclerView(binding.itemsRecyclerView);
 
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
