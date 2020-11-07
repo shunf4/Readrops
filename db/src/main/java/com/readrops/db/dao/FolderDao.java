@@ -12,6 +12,8 @@ import com.readrops.db.pojo.FolderWithFeedCount;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
+
 @Dao
 public abstract class FolderDao implements BaseDao<Folder> {
 
@@ -38,6 +40,9 @@ public abstract class FolderDao implements BaseDao<Folder> {
 
     @Query("Delete From Folder Where remoteId in (:ids)")
     abstract void deleteByIds(List<String> ids);
+
+    @Query("Delete From Folder Where account_id = :accountId")
+    public abstract Completable deleteAll(int accountId);
 
     @Query("Select * From Folder Where name = :name And account_id = :accountId")
     public abstract Folder getFolderByName(String name, int accountId);

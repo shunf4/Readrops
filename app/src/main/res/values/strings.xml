@@ -140,4 +140,6 @@
     <string name="synchronize">Synchronize</string>
     <string name="navigator_view">Navigator view</string>
     <string name="favorites">Favorites</string>
+    <string name="clear_account">Clear account data</string>
+    <string name="clear_account_question">Clear account ?</string>
 </resources>

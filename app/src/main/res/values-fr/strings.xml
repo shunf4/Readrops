@@ -134,5 +134,7 @@
     <string name="synchronize">Synchroniser</string>
     <string name="navigator_view">Vue navigateur</string>
     <string name="favorites">Favoris</string>
+    <string name="clear_account">Effacer les données du compte</string>
+    <string name="clear_account_question">Effacer le compte ?</string>
 
 </resources>
