@@ -198,10 +198,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 updateDrawerFeeds();
 
                 openItemActivity(getIntent());
-            } else if (accounts.size() < drawerManager.getNumberOfProfiles() && !accounts.isEmpty()) {
+            } else if (!accounts.isEmpty()) {
+                // Let's force refresh account data on the drawer
                 drawerManager.updateHeader(accounts);
                 updateDrawerFeeds();
-            } else if (accounts.isEmpty()) {
+            } else {
                 Intent intent = new Intent(this, AccountTypeListActivity.class);
                 startActivity(intent);
                 finish();

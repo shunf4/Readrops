@@ -54,6 +54,13 @@ public class AccountViewModel extends ViewModel {
         return database.accountDao().update(account);
     }
 
+    public Completable clear(Account account) {
+        account.setLastModified(0);
+        return database.accountDao().update(account).andThen(
+                repository.localClearData()
+        );
+    }
+
     public Completable delete(Account account) {
         return database.accountDao().delete(account);
     }

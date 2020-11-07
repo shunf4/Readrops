@@ -142,4 +142,6 @@
     <string name="favorites">Favorites</string>
     <string name="next_item">Next item</string>
     <string name="prev_item">Previous item</string>
+    <string name="clear_account">Clear account data</string>
+    <string name="clear_account_question">Clear account ?</string>
 </resources>

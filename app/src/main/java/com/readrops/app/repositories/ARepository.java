@@ -58,6 +58,12 @@ public abstract class ARepository {
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
 
+    public Completable localClearData() {
+        return database.itemDao().deleteAll(account.getId())
+                .andThen(database.feedDao().deleteAll(account.getId()))
+                .andThen(database.folderDao().deleteAll(account.getId()));
+    }
+
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
 
     public Completable insertOPMLFoldersAndFeeds(Map<Folder, List<Feed>> foldersAndFeeds) {

@@ -29,6 +29,9 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Select * From Item Where id = :itemId")
     Item select(int itemId);
 
+    @Query("Delete From Item Where feed_id In (Select id From Feed Where account_id = :accountId)")
+    Completable deleteAll(int accountId);
+
     @Query("Select case When :guid In (Select guid From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
     boolean itemExists(String guid, int accountId);
 

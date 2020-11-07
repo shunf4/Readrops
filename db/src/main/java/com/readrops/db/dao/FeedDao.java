@@ -84,6 +84,9 @@ public abstract class FeedDao implements BaseDao<Feed> {
     @Query("Delete from Feed Where remoteId in (:ids)")
     abstract void deleteByIds(List<String> ids);
 
+    @Query("Delete From Feed Where account_id = :accountId")
+    public abstract Completable deleteAll(int accountId);
+
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     abstract int getRemoteFolderLocalId(String remoteId, int accountId);
 

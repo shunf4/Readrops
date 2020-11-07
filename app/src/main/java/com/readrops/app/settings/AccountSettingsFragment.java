@@ -84,6 +84,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         Preference feedsFoldersPref = findPreference("feeds_folders_key");
         Preference credentialsPref = findPreference("credentials_key");
         Preference deleteAccountPref = findPreference("delete_account_key");
+        Preference clearAccountPref = findPreference("clear_account_key");
         Preference opmlPref = findPreference("opml_import_export");
         Preference notificationPref = findPreference("notifications");
 
@@ -113,6 +114,11 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
         deleteAccountPref.setOnPreferenceClickListener(preference -> {
             deleteAccount();
+            return true;
+        });
+
+        clearAccountPref.setOnPreferenceClickListener(preference -> {
+            clearAccount();
             return true;
         });
 
@@ -228,6 +234,30 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                 .title(R.string.processing_file_failed)
                 .neutralText(R.string.cancel)
                 .iconRes(R.drawable.ic_error)
+                .show();
+    }
+
+    private void clearAccount() {
+        new MaterialDialog.Builder(getContext())
+                .title(R.string.clear_account_question)
+                .positiveText(R.string.validate)
+                .negativeText(R.string.cancel)
+                .onPositive(((dialog, which) -> {
+                    viewModel.clear(account)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DisposableCompletableObserver() {
+                                @Override
+                                public void onComplete() {
+                                    getActivity().finish();
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Utils.showSnackbar(getView(), e.getMessage());
+                                }
+                            });
+                }))
                 .show();
     }
 

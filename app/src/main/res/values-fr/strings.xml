@@ -136,4 +136,6 @@
     <string name="favorites">Favoris</string>
     <string name="prev_item">" Précédent"</string>
     <string name="next_item">Suivant</string>
+    <string name="clear_account">Effacer les données du compte</string>
+    <string name="clear_account_question">Effacer le compte ?</string>
 </resources>
