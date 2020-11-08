@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     default:
                         if (!updating) {
                             viewModel.setCurrentAccount(id);
+                            scrollToTop = true;
                             updateDrawerFeeds();
                         }
                         break;
