@@ -1,11 +1,13 @@
 package com.readrops.api
 
+import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSFoldersAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSItemsAdapter
+import com.readrops.api.services.freshrss.adapters.FreshRSSItemsIdsAdapter
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource
 import com.readrops.api.services.nextcloudnews.NextNewsService
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter
@@ -32,16 +34,17 @@ val apiModule = module {
                 .callTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.HOURS)
                 .addInterceptor(get<AuthInterceptor>())
+                .addInterceptor(NiddlerOkHttpInterceptor(get(), "niddler"))
                 .build()
     }
+
+    single { AuthInterceptor() }
 
     single { LocalRSSDataSource(get()) }
 
     //region freshrss
 
-    single {
-        FreshRSSDataSource(get())
-    }
+    single { FreshRSSDataSource(get()) }
 
     single {
         get<Retrofit>(named("freshrssRetrofit"))
@@ -49,7 +52,7 @@ val apiModule = module {
     }
 
     single(named("freshrssRetrofit")) {
-        Retrofit.Builder() // url will be set dynamically in an interceptor
+        Retrofit.Builder() // url will be set dynamically in AuthInterceptor
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get<OkHttpClient>())
@@ -60,6 +63,7 @@ val apiModule = module {
     single(named("freshrssMoshi")) {
         Moshi.Builder()
                 .add(Types.newParameterizedType(List::class.java, Item::class.java), FreshRSSItemsAdapter())
+                .add(Types.newParameterizedType(List::class.java, String::class.java), FreshRSSItemsIdsAdapter())
                 .add(FreshRSSFeedsAdapter())
                 .add(FreshRSSFoldersAdapter())
                 .build()
@@ -69,9 +73,7 @@ val apiModule = module {
 
     //region nextcloud news
 
-    single {
-        NextNewsDataSource(get())
-    }
+    single { NextNewsDataSource(get()) }
 
     single {
         get<Retrofit>(named("nextcloudNewsRetrofit"))
@@ -79,7 +81,7 @@ val apiModule = module {
     }
 
     single(named("nextcloudNewsRetrofit")) {
-        Retrofit.Builder() // url will be set dynamically in an interceptor
+        Retrofit.Builder() // url will be set dynamically in AuthInterceptor
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get<OkHttpClient>())
@@ -96,8 +98,4 @@ val apiModule = module {
     }
 
     //endregion nextcloud news
-
-    single {
-        AuthInterceptor()
-    }
 }
