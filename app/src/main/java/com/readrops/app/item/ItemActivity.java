@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -136,10 +137,12 @@ public class ItemActivity extends AppCompatActivity {
                     .subscribe();
         });
 
-        commonLoadReloadUI(getIntent());
+        commonLoadReloadUI();
     }
 
-    private void commonLoadReloadUI(Intent intent) {
+    private void commonLoadReloadUI() {
+        Intent intent = getIntent();
+
         itemId = intent.getIntExtra(ITEM_ID, 0);
         imageUrl = intent.getStringExtra(IMAGE_URL);
         indexInList = intent.getIntExtra(INDEX_IN_LIST, -1);
@@ -244,6 +247,16 @@ public class ItemActivity extends AppCompatActivity {
             binding.prevItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
             binding.nextItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
             Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), itemWithFeed.getColor());
+        } else {
+            TypedValue typedValue = new TypedValue();
+            TypedArray ca = obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorAccent });
+            int primaryColor = ca.getColor(0, 0);
+            ca.recycle();
+
+            binding.activityItemTitle.setTextColor(primaryColor);
+            binding.prevItemButton.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
+            binding.nextItemButton.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
+            Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), primaryColor);
         }
 
         if (item.getAuthor() != null && !item.getAuthor().isEmpty()) {
@@ -283,6 +296,18 @@ public class ItemActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(itemWithFeed.getColor());
             binding.activityItemFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
             binding.itemStarFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
+        } else {
+            TypedValue typedValue = new TypedValue();
+            TypedArray ca = obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorAccent });
+            int primaryColor = ca.getColor(0, 0);
+            ca.recycle();
+            binding.collapsingLayout.setBackgroundColor(primaryColor);
+            binding.collapsingLayout.setContentScrimColor(primaryColor);
+            binding.collapsingLayout.setStatusBarScrimColor(primaryColor);
+
+            getWindow().setStatusBarColor(primaryColor);
+            binding.activityItemFab.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
+            binding.itemStarFab.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
         }
 
         binding.itemWebview.setItem(itemWithFeed);
@@ -296,7 +321,8 @@ public class ItemActivity extends AppCompatActivity {
         itemIntent.putExtra(IMAGE_URL, prevItemWithFeed.getItem().getImageLink());
         itemIntent.putExtra(INDEX_IN_LIST, itemIndex);
 
-        commonLoadReloadUI(itemIntent);
+        setIntent(itemIntent);
+        commonLoadReloadUI();
         if (mainViewModel != null) {
             mainViewModel.setItemReadState(itemIntent.getIntExtra(ITEM_ID, 0), true, true)
                     .subscribeOn(Schedulers.io())
