@@ -118,6 +118,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbarMain);
 
+        binding.toolbarMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.itemsRecyclerView.scrollToPosition(0);
+            }
+        });
         binding.swipeRefreshLayout.setOnRefreshListener(this);
 
         feedCount = 0;
