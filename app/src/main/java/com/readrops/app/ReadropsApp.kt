@@ -14,6 +14,11 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import java.io.File
+import java.io.IOError
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 open class ReadropsApp : Application() {
 
@@ -35,6 +40,17 @@ open class ReadropsApp : Application() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         else
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        val logFile = File(getExternalFilesDir("logs"),
+                "logcat_" + SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()) + ".log"
+        )
+
+        try {
+            val process = Runtime.getRuntime().exec("logcat -c")
+            Runtime.getRuntime().exec("logcat -f " + logFile)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     private fun createNotificationChannels() {

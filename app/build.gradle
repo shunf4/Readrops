@@ -3,6 +3,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+if (file("sign.gradle").exists()) {
+    apply from: 'sign.gradle'
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -26,6 +30,12 @@ android {
         release {
             minifyEnabled false
             shrinkResources false
+
+            if (file("sign.gradle").exists()) {
+                // Local environment
+                debuggable true
+                signingConfig signingConfigs.release
+            }
 
             // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
