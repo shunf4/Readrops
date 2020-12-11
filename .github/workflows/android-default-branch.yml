@@ -25,7 +25,7 @@ jobs:
         run: bash ./gradlew assembleRelease --stacktrace
 
       - name: Sign APK
-        uses: jobobby04/sign-android-release@v1.0.2
+        uses: r0adkll/sign-android-release@v1
         id: sign
         with:
           releaseDirectory: app/build/outputs/apk/release
