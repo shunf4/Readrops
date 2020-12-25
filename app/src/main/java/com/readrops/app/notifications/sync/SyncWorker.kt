@@ -1,5 +1,6 @@
 package com.readrops.app.notifications.sync
 
+import android.app.Application
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -34,6 +35,13 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
 
     override fun doWork(): Result {
         var result = Result.success()
+
+        val application = (applicationContext as ReadropsApp)
+        if (application.activityVisible) {
+            Log.d(TAG, "activityVisible = true, do not sync")
+            return result
+        }
+
         val syncResults = mutableMapOf<Account, SyncResult>()
 
         try {

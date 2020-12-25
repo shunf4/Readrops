@@ -1,9 +1,12 @@
 package com.readrops.app
 
+import android.app.Activity
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.readrops.api.apiModule
@@ -22,8 +25,37 @@ import java.util.*
 
 open class ReadropsApp : Application() {
 
+    var activityVisible = false
+
     override fun onCreate() {
         super.onCreate()
+        registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityPaused(p0: Activity) {
+                Log.d("ReadropsApp", "onActivityPaused, setting activityVisible to false")
+                activityVisible = false
+            }
+
+            override fun onActivityStarted(p0: Activity) {
+            }
+
+            override fun onActivityDestroyed(p0: Activity) {
+            }
+
+            override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {
+            }
+
+            override fun onActivityStopped(p0: Activity) {
+            }
+
+            override fun onActivityCreated(p0: Activity, p1: Bundle?) {
+            }
+
+            override fun onActivityResumed(p0: Activity) {
+                Log.d("ReadropsApp", "onActivityResumed, setting activityVisible to true")
+                activityVisible = true
+            }
+
+        })
         RxJavaPlugins.setErrorHandler { e: Throwable? -> }
 
         createNotificationChannels()
