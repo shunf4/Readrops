@@ -1,6 +1,8 @@
 package com.readrops.db.dao;
 
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
@@ -128,6 +130,8 @@ public abstract class FeedDao implements BaseDao<Feed> {
                 feedsToInsert.add(feed);
             }
         }
+
+        Log.d("FeedDao", "in feedsUpsert: accountFeedIds (to be deleted): " + accountFeedIds.toString());
 
         if (!accountFeedIds.isEmpty())
             deleteByIds(accountFeedIds);

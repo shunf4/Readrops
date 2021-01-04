@@ -2,6 +2,7 @@ package com.readrops.app.repositories;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,9 +23,11 @@ import com.readrops.db.entities.account.Account;
 import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.TreeMap;
 
 import io.reactivex.Completable;
@@ -50,6 +53,9 @@ public abstract class ARepository {
     }
 
     protected void setCredentials(@Nullable Account account) {
+        StackTraceElement[] stack = new Exception().getStackTrace();
+        Log.d("ARepository", "credentials set to " + account.getDisplayedName() + ", because: "
+            + Arrays.toString(stack));
         KoinJavaComponent.get(AuthInterceptor.class)
                 .setCredentials(account != null && !account.isLocal() ? Credentials.toCredentials(account) : null);
     }

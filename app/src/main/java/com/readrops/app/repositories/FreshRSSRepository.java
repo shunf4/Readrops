@@ -199,7 +199,7 @@ public class FreshRSSRepository extends ARepository {
     }
 
     private void insertFeeds(List<Feed> freshRSSFeeds) {
-        Log.d(TAG, "size of freshRSSFeeds: " + freshRSSFeeds.size());
+        Log.d(TAG, "size of freshRSSFeeds: " + freshRSSFeeds.size() + ". Current account: " + account.getDisplayedName());
         for (Feed feed : freshRSSFeeds) {
             feed.setAccountId(account.getId());
         }
