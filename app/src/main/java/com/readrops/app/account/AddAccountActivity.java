@@ -2,7 +2,7 @@ package com.readrops.app.account;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import com.readrops.db.logwrapper.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.MenuItem;

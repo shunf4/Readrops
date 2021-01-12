@@ -2,7 +2,7 @@ package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
 import android.content.Context;
-import android.util.Log;
+import com.readrops.db.logwrapper.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

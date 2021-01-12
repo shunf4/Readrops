@@ -1,6 +1,6 @@
 package com.readrops.api.utils;
 
-import android.util.Log;
+import com.readrops.db.logwrapper.Log;
 
 import androidx.annotation.Nullable;
 

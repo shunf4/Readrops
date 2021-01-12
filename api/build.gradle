@@ -79,4 +79,5 @@ dependencies {
 
     debugApi 'com.icapps.niddler:niddler:1.2.0'
     releaseApi 'com.icapps.niddler:niddler-noop:1.2.0'
+    implementation 'com.github.bosphere.android-filelogger:filelogger:1.0.7'
 }

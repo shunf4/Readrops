@@ -2,7 +2,6 @@ package com.readrops.api.opml
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.readrops.api.opml.model.Body
 import com.readrops.api.opml.model.Head
 import com.readrops.api.opml.model.OPML
@@ -10,6 +9,7 @@ import com.readrops.api.opml.model.Outline
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.logwrapper.Log
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.SingleOnSubscribe

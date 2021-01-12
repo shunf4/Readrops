@@ -6,22 +6,42 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import com.bosphere.filelogger.FL
+import com.bosphere.filelogger.FLConfig
+import com.bosphere.filelogger.FLConst
 import com.readrops.api.apiModule
 import com.readrops.app.utils.SharedPreferencesManager
 import com.readrops.db.dbModule
+import com.readrops.db.logwrapper.Log
 import io.reactivex.plugins.RxJavaPlugins
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import java.io.File
-import java.io.IOError
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
+class ReadropsLogFormatter : FLConfig.DefaultFormatter() {
+    private val mDate: ThreadLocal<Date> = object : ThreadLocal<Date>() {
+        override fun initialValue(): Date {
+            return Date()
+        }
+    }
+    private val mReadropsFilenameDate: ThreadLocal<SimpleDateFormat> = object : ThreadLocal<SimpleDateFormat>() {
+        override fun initialValue(): SimpleDateFormat {
+            return SimpleDateFormat("yyyy-MM-dd_HH", Locale.ENGLISH)
+        }
+    }
+
+    override fun formatFileName(timeInMillis: Long): String {
+        mDate.get()!!.time = timeInMillis
+        return "filelogger_" + mReadropsFilenameDate.get()!!.format(mDate.get()!!) + ".log"
+    }
+}
 
 open class ReadropsApp : Application() {
 
@@ -83,6 +103,16 @@ open class ReadropsApp : Application() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+
+        FL.init(FLConfig.Builder(this)
+                .minLevel(FLConst.Level.V)
+                .logToFile(true)
+                .dir(getExternalFilesDir("logs"))
+                .retentionPolicy(FLConst.RetentionPolicy.NONE)
+                .formatter(ReadropsLogFormatter())
+                .build()
+        )
+        FL.setEnabled(true)
     }
 
     private fun createNotificationChannels() {

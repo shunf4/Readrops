@@ -2,7 +2,7 @@ package com.readrops.app.repositories;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import com.readrops.db.logwrapper.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

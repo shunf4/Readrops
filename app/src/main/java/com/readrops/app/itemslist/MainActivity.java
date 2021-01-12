@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import com.readrops.db.logwrapper.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;

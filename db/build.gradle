@@ -77,4 +77,6 @@ dependencies {
     api "org.koin:koin-android:$koin_version"
     api "org.koin:koin-androidx-scope:$koin_version"
     api "org.koin:koin-androidx-viewmodel:$koin_version"
+
+    implementation 'com.github.bosphere.android-filelogger:filelogger:1.0.7'
 }

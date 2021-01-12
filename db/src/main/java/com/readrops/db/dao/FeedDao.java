@@ -1,7 +1,7 @@
 package com.readrops.db.dao;
 
 
-import android.util.Log;
+import com.readrops.db.logwrapper.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;

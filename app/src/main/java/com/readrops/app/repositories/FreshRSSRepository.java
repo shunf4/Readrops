@@ -1,7 +1,7 @@
 package com.readrops.app.repositories;
 
 import android.content.Context;
-import android.util.Log;
+import com.readrops.db.logwrapper.Log;
 import android.util.TimingLogger;
 
 import androidx.annotation.NonNull;
