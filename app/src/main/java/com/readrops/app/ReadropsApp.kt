@@ -8,10 +8,14 @@ import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import androidx.work.Configuration
+import androidx.work.WorkManager
 import com.bosphere.filelogger.FL
 import com.bosphere.filelogger.FLConfig
 import com.bosphere.filelogger.FLConst
 import com.readrops.api.apiModule
+import com.readrops.app.notifications.sync.SyncWorker
+import com.readrops.app.settings.SettingsFragment
 import com.readrops.app.utils.SharedPreferencesManager
 import com.readrops.db.dbModule
 import com.readrops.db.logwrapper.Log
@@ -24,6 +28,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 
 class ReadropsLogFormatter : FLConfig.DefaultFormatter() {
     private val mDate: ThreadLocal<Date> = object : ThreadLocal<Date>() {
@@ -33,7 +38,7 @@ class ReadropsLogFormatter : FLConfig.DefaultFormatter() {
     }
     private val mReadropsFilenameDate: ThreadLocal<SimpleDateFormat> = object : ThreadLocal<SimpleDateFormat>() {
         override fun initialValue(): SimpleDateFormat {
-            return SimpleDateFormat("yyyy-MM-dd_HH", Locale.ENGLISH)
+            return SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
         }
     }
 
@@ -71,8 +76,9 @@ open class ReadropsApp : Application() {
             }
 
             override fun onActivityResumed(p0: Activity) {
-                Log.d("ReadropsApp", "onActivityResumed, setting activityVisible to true")
+                Log.d("ReadropsApp", "onActivityResumed, setting activityVisible to true and reschedule work")
                 activityVisible = true
+                SettingsFragment.rescheduleSynchroWork(p0, null)
             }
 
         })
@@ -113,6 +119,19 @@ open class ReadropsApp : Application() {
                 .build()
         )
         FL.setEnabled(true)
+
+        WorkManager.initialize(
+                this,
+                Configuration.Builder()
+                        .setExecutor(Executors.newSingleThreadExecutor())
+                        .build()
+        )
+
+        val workManager = WorkManager.getInstance(this)
+        val workTag = SyncWorker.TAG
+        FL.i("ReadropsApp", "workTag: $workTag")
+        val workInfos = workManager.getWorkInfosByTag(workTag).get()
+        FL.i("ReadropsApp", "workInfos: $workInfos")
     }
 
     private fun createNotificationChannels() {

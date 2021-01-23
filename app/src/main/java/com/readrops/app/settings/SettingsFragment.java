@@ -1,6 +1,8 @@
 package com.readrops.app.settings;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Pair;
 
@@ -8,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
@@ -16,14 +19,18 @@ import androidx.work.WorkManager;
 
 import com.readrops.app.R;
 import com.readrops.app.notifications.sync.SyncWorker;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import com.readrops.db.Database;
+import com.readrops.db.logwrapper.Log;
 
 import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.reactivex.Completable;
 
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
@@ -68,31 +75,42 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         synchroPreference.setOnPreferenceChangeListener(((preference, newValue) -> {
-            WorkManager workManager = WorkManager.getInstance(getContext());
-            Pair<Integer, TimeUnit> interval = getWorkerInterval((String) newValue);
-
-            if (interval != null) {
-                Constraints constraints = new Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build();
-
-                PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(SyncWorker.class, interval.first, interval.second)
-                        .addTag(SyncWorker.Companion.getTAG())
-                        .setConstraints(constraints)
-                        .setInitialDelay(interval.first, interval.second)
-                        .build();
-
-                workManager.enqueueUniquePeriodicWork(SyncWorker.Companion.getTAG(), ExistingPeriodicWorkPolicy.REPLACE, request);
-            } else {
-                workManager.cancelAllWorkByTag(SyncWorker.Companion.getTAG());
-            }
+            rescheduleSynchroWork(getContext(), (String) newValue);
 
             return true;
         }));
     }
 
+    public static void rescheduleSynchroWork(Context context, String optionalIntervalString) {
+        String intervalString;
+        if (optionalIntervalString == null) {
+            intervalString = SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.AUTO_SYNCHRO);
+        } else {
+            intervalString = optionalIntervalString;
+        }
+
+        Pair<Integer, TimeUnit> interval = getWorkerInterval(intervalString);
+        WorkManager workManager = WorkManager.getInstance(context);
+        if (interval != null) {
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+
+            PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(SyncWorker.class, interval.first, interval.second)
+                    .addTag(SyncWorker.Companion.getTAG())
+                    .setConstraints(constraints)
+                    .setInitialDelay(interval.first, interval.second)
+                    .build();
+
+            workManager.enqueueUniquePeriodicWork(SyncWorker.Companion.getTAG(), ExistingPeriodicWorkPolicy.REPLACE, request);
+            Log.d(SyncWorker.Companion.getTAG(), "reschedule work to " + interval.first + interval.second.toString() + " later");
+        } else {
+            workManager.cancelAllWorkByTag(SyncWorker.Companion.getTAG());
+        }
+    }
+
     @Nullable
-    private Pair<Integer, TimeUnit> getWorkerInterval(String newValue) {
+    private static Pair<Integer, TimeUnit> getWorkerInterval(String newValue) {
         int interval;
         TimeUnit timeUnit;
 

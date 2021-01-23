@@ -32,6 +32,11 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            tools:node="remove" />
+
         <activity
             android:name=".notifications.NotificationPermissionActivity"
             android:theme="@style/AppTheme" />

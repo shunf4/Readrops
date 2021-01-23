@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -55,7 +56,14 @@ public abstract class ARepository {
     protected void setCredentials(@Nullable Account account) {
         StackTraceElement[] stack = new Exception().getStackTrace();
         Log.d("ARepository", "credentials set to " + account.getDisplayedName() + ", because: "
-            + Arrays.toString(stack));
+            + Arrays.stream(stack).map(ste -> {
+                return ste.getClassName().substring(ste.getClassName().lastIndexOf('.') + 1)
+                        + "." + ste.getMethodName()
+                        + "(" + ste.getFileName()
+                        + ":" + Integer.toString(ste.getLineNumber())
+                        + ")";
+            }).collect(Collectors.joining(", "))
+        );
         KoinJavaComponent.get(AuthInterceptor.class)
                 .setCredentials(account != null && !account.isLocal() ? Credentials.toCredentials(account) : null);
     }
