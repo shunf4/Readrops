@@ -16,7 +16,7 @@ object ItemsQueryBuilder {
     private const val SELECT_ALL_JOIN = "Item INNER JOIN Feed on Item.feed_id = Feed.id " +
             "LEFT JOIN Folder on Feed.folder_id = Folder.id"
 
-    private const val ORDER_BY_ASC = ".id DESC"
+    private const val ORDER_BY_ASC = ".pub_date DESC"
 
     private const val ORDER_BY_DESC = "pub_date ASC"
 
