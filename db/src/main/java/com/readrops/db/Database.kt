@@ -8,7 +8,7 @@ import com.readrops.db.entities.*
 import com.readrops.db.entities.account.Account
 import dev.matrix.roomigrant.GenerateRoomMigrations
 
-@Database(entities = [Feed::class, Item::class, Folder::class, Account::class, UnreadItemsIds::class, ReadStarStateChange::class, StarredItem::class], version = 3)
+@Database(entities = [Feed::class, Item::class, Folder::class, Account::class, UnreadItemsIds::class, ReadStarStateChange::class, StarredItem::class], version = 10003)
 @TypeConverters(Converters::class)
 @GenerateRoomMigrations
 abstract class Database : RoomDatabase() {
