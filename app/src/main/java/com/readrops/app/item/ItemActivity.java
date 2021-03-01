@@ -58,6 +58,7 @@ import io.reactivex.schedulers.Schedulers;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
 import static com.readrops.app.utils.ReadropsKeys.FILTER_FEED_ID;
+import static com.readrops.app.utils.ReadropsKeys.FILTER_FOLDER_ID;
 import static com.readrops.app.utils.ReadropsKeys.FILTER_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.INDEX_IN_LIST;
@@ -158,11 +159,12 @@ public class ItemActivity extends AppCompatActivity {
                 mainViewModel.setShowReadItems(intent.getBooleanExtra(SHOW_READ_ITEMS, false));
                 mainViewModel.setFilterType((FilterType) intent.getSerializableExtra(FILTER_TYPE));
                 mainViewModel.setSortType((ListSortType) intent.getSerializableExtra(SORT_TYPE));
-                mainViewModel.setFilterFeedId(intent.getIntExtra(FILTER_FEED_ID, -1));
+                mainViewModel.setFilterFeedId(intent.getIntExtra(FILTER_FEED_ID, 0));
+                mainViewModel.setFilterFolderId(intent.getIntExtra(FILTER_FOLDER_ID, 0));
 
                 mainViewModel.getAllAccounts().observe(this, accounts -> {
                     mainViewModel.setAccountsPure(accounts);
-                    mainViewModel.setCurrentAccountPure(intent.getIntExtra(ACCOUNT_ID, -1));
+                    mainViewModel.setCurrentAccountPure(intent.getIntExtra(ACCOUNT_ID, 0));
                     mainViewModel.invalidate();
                 });
 

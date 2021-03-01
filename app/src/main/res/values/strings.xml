@@ -144,4 +144,5 @@
     <string name="prev_item">Previous item</string>
     <string name="clear_account">Clear account data</string>
     <string name="clear_account_question">Clear account ?</string>
+    <string name="all">All</string>
 </resources>

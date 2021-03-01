@@ -16,6 +16,7 @@ object ReadropsKeys {
     const val FILTER_TYPE = "FILTER_TYPE_KEY"
     const val SORT_TYPE = "SORT_TYPE_KEY"
     const val FILTER_FEED_ID = "FILTER_FEED_ID_KEY"
+    const val FILTER_FOLDER_ID = "FILTER_FOLDER_ID_KEY"
 
     const val SYNCING = "SYNCING_KEY"
 

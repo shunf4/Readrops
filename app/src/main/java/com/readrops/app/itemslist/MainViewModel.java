@@ -74,6 +74,8 @@ public class MainViewModel extends ViewModel {
 
         if (queryFilters.getFilterType() == FilterType.STARS_FILTER && currentAccount.getAccountType().getAccountConfig().isUseStarredItems()) {
             query = ItemsQueryBuilder.buildStarredItemsQuery(queryFilters);
+        } else if (queryFilters.getFilterType() == FilterType.FOLDER_FILTER) {
+            query = ItemsQueryBuilder.buildItemsQuery(queryFilters);
         } else {
             query = ItemsQueryBuilder.buildItemsQuery(queryFilters);
         }
@@ -122,8 +124,16 @@ public class MainViewModel extends ViewModel {
         queryFilters.setFilterFeedId(filterFeedId);
     }
 
+    public void setFilterFolderId(int filterFolderId) {
+        queryFilters.setFilterFolderId(filterFolderId);
+    }
+
     public int getFilterFeedId() {
         return queryFilters.getFilterFeedId();
+    }
+
+    public int getFilterFolderId() {
+        return queryFilters.getFilterFolderId();
     }
 
     public MediatorLiveData<PagedList<ItemWithFeed>> getItemsWithFeed() {

@@ -23,9 +23,9 @@ import okhttp3.RequestBody;
 
 public class FreshRSSDataSource {
 
-    private static final int MAX_ITEMS = 2000;
-    private static final int MAX_UNREAD_ITEMS_IDS = 2000;
-    private static final int MAX_STARRED_ITEMS = 1000;
+    private static final int MAX_ITEMS = 800;
+    private static final int MAX_UNREAD_ITEMS_IDS = 800;
+    private static final int MAX_STARRED_ITEMS = 800;
 
     public static final String GOOGLE_READ = "user/-/state/com.google/read";
     public static final String GOOGLE_STARRED = "user/-/state/com.google/starred";

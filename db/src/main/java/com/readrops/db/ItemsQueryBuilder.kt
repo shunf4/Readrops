@@ -35,6 +35,9 @@ object ItemsQueryBuilder {
         if (filterType == FilterType.FEED_FILTER && filterFeedId == 0)
             throw IllegalArgumentException("FeedId must be greater than 0 if current filter is FEED_FILTER")
 
+        if (filterType == FilterType.FOLDER_FILTER && filterFolderId == 0)
+            throw IllegalArgumentException("FolderId must be greater than 0 if current filter is FOLDER_FILTER")
+
         SupportSQLiteQueryBuilder.builder(if (starQuery) SELECT_ALL_JOIN.replace("Item", "StarredItem") else SELECT_ALL_JOIN).run {
             columns(COLUMNS.plus(buildItemColumns(starQuery)))
             selection(buildWhereClause(this@with), null)
@@ -52,6 +55,7 @@ object ItemsQueryBuilder {
 
             when (queryFilters.filterType) {
                 FilterType.FEED_FILTER -> append("feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
+                FilterType.FOLDER_FILTER -> append("folder_id = ${queryFilters.filterFolderId} And read_it_later = 0")
                 FilterType.READ_IT_LATER_FILTER -> append("read_it_later = 1")
                 FilterType.STARS_FILTER -> append("starred = 1 And read_it_later = 0")
                 else -> append("read_it_later = 0")
@@ -78,6 +82,7 @@ object ItemsQueryBuilder {
 
 class QueryFilters(var showReadItems: Boolean = true,
                    var filterFeedId: Int = 0,
+                   var filterFolderId: Int = 0,
                    var accountId: Int = 0,
                    var filterType: FilterType = FilterType.NO_FILTER,
                    var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST)

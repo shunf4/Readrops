@@ -69,6 +69,7 @@ import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 import static com.readrops.app.utils.ReadropsKeys.FILTER_FEED_ID;
+import static com.readrops.app.utils.ReadropsKeys.FILTER_FOLDER_ID;
 import static com.readrops.app.utils.ReadropsKeys.FILTER_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
@@ -283,9 +284,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         } else if (drawerItem instanceof SecondaryDrawerItem) {
             drawer.closeDrawer();
 
-            viewModel.setFilterFeedId((int) drawerItem.getIdentifier());
-            viewModel.setFilterType(FilterType.FEED_FILTER);
-            viewModel.invalidate();
+            long identifier = drawerItem.getIdentifier();
+
+            if (identifier > 0x1fffffffffffffffL) {
+                // Is an "all" item
+                viewModel.setFilterFolderId((int) (identifier - 0x3fffffffffffffffL));
+                viewModel.setFilterType(FilterType.FOLDER_FILTER);
+                viewModel.invalidate();
+            } else {
+                viewModel.setFilterFeedId((int) identifier);
+                viewModel.setFilterType(FilterType.FEED_FILTER);
+                viewModel.invalidate();
+            }
         }
     }
 
@@ -330,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     intent.putExtra(FILTER_TYPE, viewModel.getFilterType());
                     intent.putExtra(SORT_TYPE, viewModel.getSortType());
                     intent.putExtra(FILTER_FEED_ID, viewModel.getFilterFeedId());
+                    intent.putExtra(FILTER_FOLDER_ID, viewModel.getFilterFolderId());
                     intent.putExtra(ACCOUNT_ID, viewModel.getCurrentAccount().getId());
                     startActivityForResult(intent, ITEM_REQUEST);
 

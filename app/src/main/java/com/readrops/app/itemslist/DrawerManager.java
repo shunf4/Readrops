@@ -110,6 +110,8 @@ public class DrawerManager {
                     loadItemIcon(secondaryDrawerItem, feed);
                 }
 
+                secondaryDrawerItems.add(0, createSecondaryItemNamedAll(folder.getId(), expandableUnreadCount));
+
                 if (!secondaryDrawerItems.isEmpty()) {
                     badgeDrawerItem.withSubItems(secondaryDrawerItems);
                     badgeDrawerItem.withBadge(String.valueOf(expandableUnreadCount));
@@ -177,6 +179,14 @@ public class DrawerManager {
                 .withBadge(String.valueOf(feed.getUnreadCount()))
                 .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
                 .withIdentifier(feed.getId());
+    }
+
+    private SecondaryDrawerItem createSecondaryItemNamedAll(int folderId, int unreadCount) {
+        return new SecondaryDrawerItem()
+                .withName(R.string.all)
+                .withBadge(String.valueOf(unreadCount))
+                .withIcon(drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
+                .withIdentifier(0x3fffffffffffffffL + folderId);
     }
 
     private void loadItemIcon(SecondaryDrawerItem secondaryDrawerItem, Feed feed) {
