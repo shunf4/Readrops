@@ -16,7 +16,7 @@ android {
         buildToolsVersion rootProject.ext.buildToolsVersion
 
         versionCode 12
-        versionName "1.2.1-shunf4-12"
+        versionName "1.2.1-shunf4-13"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     testOptions {
