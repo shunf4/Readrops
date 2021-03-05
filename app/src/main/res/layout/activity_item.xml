@@ -192,15 +192,23 @@
             style="@style/GenericButton"
             android:layout_height="48dp"
             android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:text="@string/prev_item" />
+
+        <Button
+            android:id="@+id/open_url_button"
+            style="@style/GenericButton"
+            android:layout_height="48dp"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="@string/open_url" />
 
         <Button
             android:id="@+id/next_item_button"
             style="@style/GenericButton"
             android:layout_height="48dp"
             android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:text="@string/next_item" />
 
     </LinearLayout>

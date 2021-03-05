@@ -26,8 +26,10 @@ import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -150,6 +152,22 @@ public class MainViewModel extends ViewModel {
 
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return repository.getFoldersWithFeeds();
+    }
+
+    public Single<String> getFolderName(int folderId) {
+        return Single.create(emitter -> {
+            Folder folder = database.folderDao().select(folderId);
+
+            emitter.onSuccess(folder == null ? "Unknown" : folder.getName());
+        });
+    }
+
+    public Single<String> getFeedName(int feedId) {
+        return Single.create(emitter -> {
+            Feed feed = database.feedDao().getFeedById(feedId);
+
+            emitter.onSuccess(feed == null ? "Unknown" : feed.getName());
+        });
     }
 
     //endregion

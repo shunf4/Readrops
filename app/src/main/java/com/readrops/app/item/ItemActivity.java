@@ -243,11 +243,13 @@ public class ItemActivity extends AppCompatActivity {
             binding.activityItemTitle.setTextColor(itemWithFeed.getBgColor());
             binding.prevItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
             binding.nextItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
+            binding.openUrlButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
             Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), itemWithFeed.getBgColor());
         } else if (itemWithFeed.getColor() != 0) {
             binding.activityItemTitle.setTextColor(itemWithFeed.getColor());
             binding.prevItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
             binding.nextItemButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
+            binding.openUrlButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
             Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), itemWithFeed.getColor());
         } else {
             TypedValue typedValue = new TypedValue();
@@ -258,6 +260,7 @@ public class ItemActivity extends AppCompatActivity {
             binding.activityItemTitle.setTextColor(primaryColor);
             binding.prevItemButton.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
             binding.nextItemButton.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
+            binding.openUrlButton.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
             Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), primaryColor);
         }
 
@@ -346,6 +349,10 @@ public class ItemActivity extends AppCompatActivity {
                                 ? (allItems.size() - 1)
                                 : indexInList + (mainViewModel.showReadItems() ? 1 : 0)
                 );
+            });
+
+            binding.openUrlButton.setOnClickListener(view -> {
+                openUrl();
             });
             binding.switchItemButtons.setVisibility(View.VISIBLE);
         } else {

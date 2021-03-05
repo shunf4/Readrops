@@ -262,14 +262,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     viewModel.setFilterType(FilterType.NO_FILTER);
                     scrollToTop = true;
                     viewModel.invalidate();
+                    binding.toolbarMain.setTitle(R.string.articles);
                     break;
                 case DrawerManager.READ_LATER_ID:
                     viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
                     viewModel.invalidate();
+                    binding.toolbarMain.setTitle(R.string.read_later);
                     break;
                 case DrawerManager.STARS_ID:
                     viewModel.setFilterType(FilterType.STARS_FILTER);
                     viewModel.invalidate();
+                    binding.toolbarMain.setTitle(R.string.favorites);
                     break;
                 case DrawerManager.ABOUT_ID:
                     startAboutActivity();
@@ -288,12 +291,49 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             if (identifier > 0x1fffffffffffffffL) {
                 // Is an "all" item
-                viewModel.setFilterFolderId((int) (identifier - 0x3fffffffffffffffL));
+                int folderId = (int) (identifier - 0x3fffffffffffffffL);
+                viewModel.setFilterFolderId(folderId);
                 viewModel.setFilterType(FilterType.FOLDER_FILTER);
+                viewModel.getFolderName(folderId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DisposableSingleObserver<String>() {
+                            @Override
+                            public void onSuccess(@NonNull String folderName) {
+                                binding.toolbarMain.setTitle(
+                                        folderName + " - " + getString(R.string.all)
+                                );
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                binding.toolbarMain.setTitle(
+                                        "Error Folder - " + getString(R.string.all)
+                                );
+                            }
+                        });
                 viewModel.invalidate();
             } else {
                 viewModel.setFilterFeedId((int) identifier);
                 viewModel.setFilterType(FilterType.FEED_FILTER);
+                viewModel.getFeedName((int) identifier)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DisposableSingleObserver<String>() {
+                            @Override
+                            public void onSuccess(@NonNull String feedName) {
+                                binding.toolbarMain.setTitle(
+                                        feedName
+                                );
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                binding.toolbarMain.setTitle(
+                                        "Error Feed"
+                                );
+                            }
+                        });
                 viewModel.invalidate();
             }
         }
