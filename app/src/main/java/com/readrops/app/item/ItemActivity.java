@@ -9,6 +9,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
@@ -464,7 +465,7 @@ public class ItemActivity extends AppCompatActivity {
                                 shareImage(hitTestResult.getExtra());
                                 break;
                             case 1:
-                                if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
                                     downloadImage(hitTestResult.getExtra());
                                 else {
                                     urlToDownload = hitTestResult.getExtra();
@@ -506,7 +507,8 @@ public class ItemActivity extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 downloadImage(urlToDownload);
             } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                } if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
                     Utils.showSnackBarWithAction(binding.itemRoot, getString(R.string.download_image_permission),
                             getString(R.string.try_again),
                             v -> PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST,
@@ -532,7 +534,7 @@ public class ItemActivity extends AppCompatActivity {
                 .setTitle(getString(R.string.download_image))
                 .setMimeType("image/png")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "image.png");
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Readrops/" + System.currentTimeMillis() + ".png");
 
         request.allowScanningByMediaScanner();
 
