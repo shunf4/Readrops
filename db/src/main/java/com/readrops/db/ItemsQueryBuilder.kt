@@ -58,7 +58,7 @@ object ItemsQueryBuilder {
                 FilterType.FOLDER_FILTER -> append("folder_id = ${queryFilters.filterFolderId} And read_it_later = 0")
                 FilterType.READ_IT_LATER_FILTER -> append("read_it_later = 1")
                 FilterType.STARS_FILTER -> append("starred = 1 And read_it_later = 0")
-                else -> append("read_it_later = 0")
+                else -> append("read_it_later = 0 And Folder.name != 'SNS'")
             }
 
             toString()
